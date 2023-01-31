@@ -1,4 +1,10 @@
-# PIRLNav: Pretraining with Imitation and RL Finetuning for ObjectNav
+# Fork Of PIRLNAV
+
+fork of the pirlnav repo
+
+
+
+# Original Author - PIRLNav: Pretraining with Imitation and RL Finetuning for ObjectNav
 
 Code for our paper [PIRLNav: Pretraining with Imitation and RL Finetuning for ObjectNav](). 
 
