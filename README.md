@@ -2,6 +2,10 @@
 
 fork of the pirlnav repo
 
+main branch for this repo `main-powerPC`
+https://github.com/Claessens14/pirlnav-fork/tree/main-powerPC
+
+
 
 For running on PowerPC high performance computing cluster
  - assuming you already downloaded the data, and just need to link it, there is an example
