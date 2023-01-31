@@ -3,6 +3,57 @@
 fork of the pirlnav repo
 
 
+For running on PowerPC high performance computing cluster
+ - assuming you already downloaded the data, and just need to link it, there is an example
+```
+/* ---------- january 27h, 2022 ----------
+fork of
+https://github.com/Ram81/pirlnav
+   ----------  */
+
+   module load MistEnv/2020a cuda/10.2.89 gcc/8.4.0 anaconda3/2019.10 cudnn/7.6.5.32 pybind11/2.6.2\
+
+   git clone https://github.com/Ram81/pirlnav.git
+   cd pirlnav
+   git submodule update --init
+
+   cd habitat-sim
+
+
+   // envrinonment config
+   2. conda create -n envNAME python=3.8
+   3. source activate envNAME
+   4. conda config --prepend channels /scinet/mist/ibm/open-ce
+   5. conda config --set channel_priority strict
+   6. conda install -c /scinet/mist/ibm/open-ce pytorch=1.10.2 cudatoolkit=11.2
+
+   python3
+   import torch
+   torch.__version__
+   torch.cuda.is_available()
+   // may need open new pane to test !
+
+   pip install -r requirements.txt
+   conda install --channel=numba llvmlite
+   python setup.py install --headless --with-cuda --bullet
+
+   conda install cmake
+   python3 setup.py install --headless --with-cuda --bullet
+
+   cd habitat-lab/
+   pip install -r requirements.txt
+
+   pip install -e .
+
+   ### -- data -----
+   In parent repo
+   mkdir data
+   ln -s /scratch/l/leil/claess14/habitat-challenge/habitat-challenge-data/data_with_semantics/scene_datasets  ../../../pirlnav/data/
+
+
+```
+
+
 
 # Original Author - PIRLNav: Pretraining with Imitation and RL Finetuning for ObjectNav
 
