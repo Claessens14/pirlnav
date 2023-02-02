@@ -1,60 +1,110 @@
-# Fork Of PIRLNAV
+# Decision Transformer For Habitat AI
 
-fork of the pirlnav repo
+The intention of this repository is to bring the decision transformer to the embodied Ai field. It is built on top of the PIRL-NAV repository, via a fork, because it is a high performing implementations of the ideas in habitat-web. Pirl-nav is built on top of habitat-web, which contains numerous human demonstrations, which can be useful during training.  
+
+The development was done via SOSCIP High Performance Computing (HPC) Platform, using mist, slurm, running IBM powerPC chips. PowerPC chips can complicate the install procedure, so I wrote a log of the entire setup procedure. I believe it is useful to demonstrate the install procedure, so others can better understand the formal document procedures. Further down in the document, is the PIRL-NAV documentation, which will help provide context to the setup procedure. 
 
 main branch for this repo `main-powerPC`
 https://github.com/Claessens14/pirlnav-fork/tree/main-powerPC
 
-
-
-For running on PowerPC high performance computing cluster
- - assuming you already downloaded the data, and just need to link it, there is an example
 ```
 /* ---------- january 27h, 2022 ----------
-fork of
+A fork of..
 https://github.com/Ram81/pirlnav
    ----------  */
 
-   module load MistEnv/2020a cuda/10.2.89 gcc/8.4.0 anaconda3/2019.10 cudnn/7.6.5.32 pybind11/2.6.2\
+module load MistEnv/2020a cuda/10.2.89 gcc/8.4.0 anaconda3/2019.10 cudnn/7.6.5.32 pybind11/2.6.2\
 
-   git clone https://github.com/Ram81/pirlnav.git
-   cd pirlnav
-   git submodule update --init
+git clone https://github.com/Claessens14/pirlnav-fork/tree/main-powerPC
+cd pirlnav-fork
+git submodule update --init
 
-   cd habitat-sim
+// envrinonment config
+2. conda create -n envNAME python=3.8
+3. source activate envNAME
+4. conda config --prepend channels /scinet/mist/ibm/open-ce
+5. conda config --set channel_priority strict
+6. conda install -c /scinet/mist/ibm/open-ce pytorch=1.10.2 cudatoolkit=11.2
 
+// test torch. (may need new tmux pain)
+python3
+import torch
+torch.__version__
+torch.cuda.is_available()
 
-   // envrinonment config
-   2. conda create -n envNAME python=3.8
-   3. source activate envNAME
-   4. conda config --prepend channels /scinet/mist/ibm/open-ce
-   5. conda config --set channel_priority strict
-   6. conda install -c /scinet/mist/ibm/open-ce pytorch=1.10.2 cudatoolkit=11.2
+// habitat sim install
+cd habitat-sim
+pip install -r requirements.txt
+conda install --channel=numba llvmlite
+conda install cmake
+python3 setup.py install --headless --with-cuda --bullet
+cd ..
 
-   python3
-   import torch
-   torch.__version__
-   torch.cuda.is_available()
-   // may need open new pane to test !
+// habitat lab setup
+cd habitat-lab/
+pip install -r requirements.txt
+pip install -e .
 
-   pip install -r requirements.txt
-   conda install --channel=numba llvmlite
-   python setup.py install --headless --with-cuda --bullet
+pip install tensorboard==2.9.1 ifcfg==0.22 lmdb==1.3 webdataset==0.1.40
 
-   conda install cmake
-   python3 setup.py install --headless --with-cuda --bullet
+======= Data Setup =========
 
-   cd habitat-lab/
-   pip install -r requirements.txt
+(from parent folder)
+// Download the fulll dataset. this may take a while
+// this command will create a data folder
+python -m habitat_sim.utils.datasets_download --username [USERNAME] --password [PASSWORD] --uids hm3d_full
+// if does not already exist - symbolic link the data
+mkdir data/scene_datasets
+ln -s data/versioned_data/hm3d-1.0/hm3d  data/scene_datasets/                                                                       
 
-   pip install -e .
+// Episode Datasets
+// FROM https://github.com/Claessens14/pirlnav-fork/tree/main-powerPC#download-demonstrations-dataset 
+mkdir -p data/datasets
+wget https://habitat-on-web.s3.amazonaws.com/pirlnav_release/objectnav_hm3d_hd.zip
+unzip objectnav_hm3d_hd.zip
+[ stout ] ===> 
+  inflating: data/datasets/objectnav/objectnav_hm3d/objectnav_hm3d_hd/train/content/1S7LAXRdDqK.json.gz                                                                                                                                                        
+  inflating: data/datasets/objectnav/objectnav_hm3d/objectnav_hm3d_hd/train/content/1UnKg1rAb8A.json.gz                                                                                                                                                        
 
-   ### -- data -----
-   In parent repo
-   mkdir data
-   ln -s /scratch/l/leil/claess14/habitat-challenge/habitat-challenge-data/data_with_semantics/scene_datasets  ../../../pirlnav/data/
+// FROM https://github.com/facebookresearch/habitat-lab/blob/main/DATASETS.md#task-datasets 
+wget https://dl.fbaipublicfiles.com/habitat/data/datasets/objectnav/hm3d/v1/objectnav_hm3d_v1.zip  
+unzip objectnav_hm3d_v1.zip    
+[ stout ] ===>                                                                                                                                              
+	Archive:  objectnav_hm3d_v1.zip                                                                                                                                                                                                                                
+   creating: objectnav_hm3d_v1/                                                                                                                                                                                                                                
+   creating: objectnav_hm3d_v1/train/                                                                                                                                                                                                                          
+  extracting: objectnav_hm3d_v1/train/train.json.gz                                                                                                                                                                                                             
+   creating: objectnav_hm3d_v1/train/content/                                                                                                                                                                                                                  
+  inflating: objectnav_hm3d_v1/train/content/MVVzj944atG.json.gz                                                                                                                                                                                               
+  inflating: objectnav_hm3d_v1/train/content/E1NrAhMoqvB.json.gz                                                                                                                                                                                               
+mv objectnav_hm3d_v1 objectnav/objectnav_hm3d/
 
+======== visual encoder ======
+cd data
+mkdir visual_encoders
+cd visual_encoders
+[ FROM https://github.com/Claessens14/pirlnav-fork/tree/main-powerPC#ovrl-encoder-weights ]
+wget https://habitat-on-web.s3.amazonaws.com/pirlnav_release/checkpoints/omnidata_DINO_02.pth
+cd ..
 
+======== checkpoint ======
+// IL from human demonstration
+// --- setup checkpooint --- 
+// https://github.com/Claessens14/pirlnav-fork/tree/main-powerPC#reproducing-results
+// ObjectNav	objectnav_rl_ft_hd.ckpt	70.4	34.1
+mkdir data/checkpoints/pretrained
+cd data/checkpoints/pretrained/
+wget https://habitat-on-web.s3.amazonaws.com/pirlnav_release/checkpoints/objectnav_rl_ft_hd.ckpt
+cd ../../..
+
+========= video ========
+mkdir video_dir
+
+======== run training =======
+./scripts/run/run-objectnav-il-powerPC.sh
+
+======== run evaluation ========
+./scripts/run/run-objectnav-il-eval-powerPC.sh
 ```
 
 
