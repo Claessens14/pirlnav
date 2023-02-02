@@ -92,10 +92,14 @@ cd ..
 // --- setup checkpooint --- 
 // https://github.com/Claessens14/pirlnav-fork/tree/main-powerPC#reproducing-results
 // ObjectNav	objectnav_rl_ft_hd.ckpt	70.4	34.1
-mkdir data/checkpoints/pretrained
-cd data/checkpoints/pretrained/
+mkdir -p data/checkpoints/pretrained/objectnav_rl_ft_hd
+mv objectnav_rl_ft_hd.ckpt data/checkpoints/pretrained/objectnav_rl_ft_hd
 wget https://habitat-on-web.s3.amazonaws.com/pirlnav_release/checkpoints/objectnav_rl_ft_hd.ckpt
-cd ../../..
+
+// ObjectNav    objectnav_il_hd.ckpt    
+wget https://habitat-on-web.s3.amazonaws.com/pirlnav_release/checkpoints/objectnav_il_hd.ckpt
+mkdir data/checkpoints/pretrained/objectnav_il_hd
+mv objectnav_il_hd.ckpt data/checkpoints/pretrained/objectnav_il_hd/
 
 ========= video ========
 mkdir video_dir
