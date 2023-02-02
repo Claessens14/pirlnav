@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=pirlnav
-#SBATCH --time=3:00:00
+#SBATCH --time=01:00:00
 #SBATCH --partition=compute_full_node
 #SBATCH --gpus-per-node 4
 #SBATCH --nodes 2
@@ -27,15 +27,15 @@ export MASTER_ADDR
 
 dataset=$1
 
-config="configs/experiments/il_objectnav.yaml"
 
 # DATA_PATH="data/datasets/objectnav/objectnav_hm3d/${dataset}"
 # TENSORBOARD_DIR="tb/objectnav_il/${dataset}/ovrl_resnet50/seed_1/"
 # CHECKPOINT_DIR="data/new_checkpoints/objectnav_il/${dataset}/ovrl_resnet50/seed_1/"
 
-DATA_PATH="data/datasets/objectnav/objectnav_hm3d/objectnav_hm3d_10k/"
-DATA_PATH="DATA_PATH=data/datasets/objectnav/objectnav_hm3d/objectnav_hm3d_hd"
-#TENSORBOARD_DIR="tb/objectnav_il/overfitting/ovrl_resnet50/seed_3_wd_zero/"
+# DATA_PATH="data/datasets/objectnav/objectnav_hm3d/objectnav_hm3d_10k/"
+config="configs/experiments/il_objectnav.yaml"
+DATA_PATH="data/datasets/objectnav/objectnav_hm3d/objectnav_hm3d_hd"
+TENSORBOARD_DIR="tb/objectnav_il/overfitting/ovrl_resnet50/seed_3_wd_zero/"
 CHECKPOINT_DIR="data/new_checkpoints/objectnav_il/overfitting/ovrl_resnet50/seed_3_wd_zero/"
 INFLECTION_COEF=3.234951275740812
 
